@@ -4,12 +4,14 @@ jobs:
    machine: true
    steps:
      - checkout
-     # start proprietary DB using private Docker image
-     # with credentials stored in the UI
-     - run: |
-         docker login -u $DOCKER_USER -p $DOCKER_PASS https://gcr.io
-         docker pull quay.io/calico/node:v2.6.5
-         docker tag quay.io/calico/node:v2.6.5 gcr.io/kube-aws/node:v2.6.5
+     # docker login
+     - run: docker login -u $DOCKER_USER -p $DOCKER_PASS https://gcr.io
+
+     # pull the image
+     - run: docker pull quay.io/calico/node:v2.6.5
+
+     # tag the image
+     - run: docker tag quay.io/calico/node:v2.6.5 gcr.io/kube-aws/node:v2.6.5
 
      # push the image
      - run: docker push gcr.io/kube-aws/node:v2.6.5

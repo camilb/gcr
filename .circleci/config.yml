@@ -4,16 +4,40 @@ jobs:
    machine: true
    steps:
      - checkout
+     # start proprietary DB using private Docker image
+     # with credentials stored in the UI
+     - run: |
+         docker login -u $DOCKER_USER -p $DOCKER_PASS https://gcr.io
 
-     - run: echo $DOCKER_USER	
-     # docker login
-     - run: docker login -u $DOCKER_USER -p $DOCKER_PASS https://gcr.io
+     # pull the images
+     - run: |
+         docker pull quay.io/coreos/awscli:master
+         docker pull quay.io/calico/node:v2.6.5
+         docker pull quay.io/calico/cni:v1.11.2
+         docker pull quay.io/calico/kube-controllers:v1.0.2
+         docker pull quay.io/calico/ctl:v1.6.3
+         docker pull jtblin/kube2iam:0.9.0
+         docker pull quay.io/coreos/flannel:v0.9.1
+         docker pull jollinshead/journald-cloudwatch-logs:0.1
 
-     # pull the image
-     - run: docker pull quay.io/calico/node:v2.6.5
+     # tag the images
+     - run: |
+         docker tag quay.io/coreos/awscli:master gcr.io/kube-aws/awscli:master
+         docker tag quay.io/calico/node:v2.6.5 gcr.io/kube-aws/node:v2.6.5
+         docker tag quay.io/calico/cni:v1.11.2 gcr.io/kube-aws/cni:v1.11.2
+         docker tag quay.io/calico/kube-controllers:v1.0.2 gcr.io/kube-aws/kube-controllers:v1.0.2
+         docker tag quay.io/calico/ctl:v1.6.3 gcr.io/kube-aws/ctl:v1.6.3
+         docker tag jtblin/kube2iam:0.9.0 gcr.io/kube-aws/kube2iam:0.9.0
+         docker tag quay.io/coreos/flannel:v0.9.1 gcr.io/kube-aws/flannel:v0.9.1
+         docker tag jollinshead/journald-cloudwatch-logs:0.1 gcr.io/kube-aws/journald-cloudwatch-logs:0.1
 
-     # tag the image
-     - run: docker tag quay.io/calico/node:v2.6.5 gcr.io/kube-aws/node:v2.6.5
-
-     # push the image
-     - run: docker push gcr.io/kube-aws/node:v2.6.5
+     # push the images
+     - run: |
+         docker push gcr.io/kube-aws/awscli:master
+         docker push gcr.io/kube-aws/node:v2.6.5
+         docker push gcr.io/kube-aws/cni:v1.11.2
+         docker push gcr.io/kube-aws/kube-controllers:v1.0.2
+         docker push gcr.io/kube-aws/ctl:v1.6.3
+         docker push gcr.io/kube-aws/kube2iam:0.9.0
+         docker push gcr.io/kube-aws/flannel:v0.9.1
+         docker push gcr.io/kube-aws/journald-cloudwatch-logs:0.1
